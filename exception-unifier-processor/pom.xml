@@ -4,9 +4,38 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.sxyang-super</groupId>
+    <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-processor</artifactId>
     <version>1.0.0</version>
+
+    <description>exception unifier processor, help modify exception enum code</description>
+    <url>https://github.com/sxyang-super/exception-unifier</url>
+
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>https://github.com/sxyang-super/exception-unifier.git</connection>
+        <developerConnection>
+            git@github.com:sxyang-super/exception-unifier.git
+        </developerConnection>
+        <url>https://github.com/sxyang-super/exception-unifier</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>sxyang-super</id>
+            <name>Shixiong Yang</name>
+            <email>gg15826517747@gmail.com</email>
+            <roles>
+                <role>Owner</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -18,7 +47,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.sxyang-super</groupId>
+            <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -31,14 +60,6 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-json</artifactId>
             <version>5.8.29</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.8</version>
-            <scope>system</scope>
-            <!--suppress MybatisPlusMapperXmlInspection, MybatisXMapperXmlInspection, MavenModelInspection -->
-            <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
         </dependency>
 
         <!-- test related -->
@@ -70,11 +91,13 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>2.0.9</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
             <version>2.0.9</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.testing.compile</groupId>
@@ -103,5 +126,215 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <!-- jar deploy -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <keyname>sxyang-super</keyname>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
+            <!-- default plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${maven.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>${maven.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>replace-processor-name</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <replace
+                                        file="${project.build.outputDirectory}/META-INF/services/javax.annotation.processing.Processor"
+                                        token="#com.sxyangsuper.exceptionunifier.processor.ExceptionUnifierProcessor"
+                                        value="com.sxyangsuper.exceptionunifier.processor.ExceptionUnifierProcessor"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- test related plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- code quality and analysis -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.24.0</version>
+                <executions>
+                    <execution>
+                        <id>pmd-main</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>cpd</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includeTests>false</includeTests>
+                    <rulesets>
+                        <ruleset>${project.basedir}/../.pmd/bestpractices.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/codestyle.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/design.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/documentation.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/errorprone.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/multithreading.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/performance.xml</ruleset>
+                        <ruleset>${project.basedir}/../.pmd/security.xml</ruleset>
+                    </rulesets>
+                    <linkXRef>false</linkXRef>
+                    <minimumPriority>5</minimumPriority>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.6.2</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- dependency management -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <id>build-classpath</id>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.17.1</version>
+            </plugin>
+
+            <!-- security -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>7.1.1</version>
+                <configuration>
+                    <format>ALL</format>
+                    <outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory>
+                    <dataDirectory>${project.build.directory}/dependency-check-data</dataDirectory>
+                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

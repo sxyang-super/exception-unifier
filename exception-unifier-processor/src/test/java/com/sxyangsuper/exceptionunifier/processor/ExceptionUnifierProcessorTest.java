@@ -223,7 +223,6 @@ class ExceptionUnifierProcessorTest {
 
         final JavaFileObject enumJavaFileObject = compilation.generatedFiles().toArray(new JavaFileObject[0])[1];
         String output = getJavaFileObjectGeneratedFilesSourceAsString(enumJavaFileObject);
-        System.out.println(output);
         Assertions.assertTrue(output.contains("A:A:A"));
     }
 
