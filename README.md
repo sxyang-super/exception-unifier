@@ -139,4 +139,5 @@ public enum SampleExceptionEnum implements ISampleExceptionEnumAsserts {
     private final String message;
 }
 ```
-5. compile your project with `mvn cleain compile` and go to your generated class file for SampleExceptionEnum, you'll find that the code of `TEST` is `SAMPLE:U:001` 
+5. compile your project with `mvn cleain compile` and go to your generated class file for SampleExceptionEnum, you'll find that the code of `TEST` is `SAMPLE:U:001`
+6. more example can be seen in [exception-unifier-sample](https://github.com/sxyang-super/exception-unifier/tree/master/exception-unifier-sample)

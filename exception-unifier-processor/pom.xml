@@ -4,9 +4,14 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.sxyang-super</groupId>
+    <parent>
+        <groupId>io.github.sxyang-super</groupId>
+        <artifactId>exception-unifier-parent</artifactId>
+        <version>1.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <artifactId>exception-unifier-processor</artifactId>
-    <version>1.0.0</version>
+    <version>${parent.version}</version>
 
     <description>exception unifier processor, help modify exception enum code</description>
     <url>https://github.com/sxyang-super/exception-unifier</url>
@@ -49,7 +54,7 @@
         <dependency>
             <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
