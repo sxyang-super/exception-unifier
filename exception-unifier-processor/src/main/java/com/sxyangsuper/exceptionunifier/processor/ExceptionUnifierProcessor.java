@@ -95,8 +95,11 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
     private String getExceptionCodePrefix() {
         debug(() -> "Start getting exception code prefix");
 
-        // get from compile args
-        final String exceptionCodePrefix = processingEnv.getOptions().get(PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX);
+        final IExceptionCodePrefixSupplier exceptionCodePrefixSupplier = ExceptionCodePrefixSupplierDetector.detect(processingEnv);
+
+        debug(() -> String.format("Detect supplier %s is available", exceptionCodePrefixSupplier.getClass().getName()));
+
+        final String exceptionCodePrefix = exceptionCodePrefixSupplier.get();
 
         if (StrUtil.isBlank(exceptionCodePrefix)) {
             throw new ExUnifierProcessException("Fail to get exception code prefix");

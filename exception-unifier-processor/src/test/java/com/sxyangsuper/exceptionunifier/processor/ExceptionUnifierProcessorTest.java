@@ -219,7 +219,7 @@ class ExceptionUnifierProcessorTest {
 
 
         assertThat(compilation).succeeded();
-        assertThat(compilation).hadNoteCount(12);
+        assertThat(compilation).hadNoteCount(13);
 
         final JavaFileObject enumJavaFileObject = compilation.generatedFiles().toArray(new JavaFileObject[0])[1];
         String output = getJavaFileObjectGeneratedFilesSourceAsString(enumJavaFileObject);
