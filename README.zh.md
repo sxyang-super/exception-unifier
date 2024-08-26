@@ -140,4 +140,13 @@ public enum SampleExceptionEnum implements ISampleExceptionEnumAsserts {
 }
 ```
 5. 使用 `mvn clean compile` 编译你的项目，并查看生成的 `SampleExceptionEnum` 类文件，你会发现 `TEST` 的代码是 `SAMPLE:U:001`
-6. 更多例子可以参考[exception-unifier-sample](https://github.com/sxyang-super/exception-unifier/tree/master/exception-unifier-sample)
+6. 使用IAsserts提供的方法
+````java
+public class Sample {
+    public static void main(String[] args) {
+        // will throw exception
+        SampleExceptionEnum.TEST.assertNotNull(null);
+    }
+}
+````
+7. 更多例子可以参考[exception-unifier-sample](https://github.com/sxyang-super/exception-unifier/tree/master/exception-unifier-sample)
