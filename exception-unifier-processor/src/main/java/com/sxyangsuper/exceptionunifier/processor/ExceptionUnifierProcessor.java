@@ -26,7 +26,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.sxyangsuper.exceptionunifier.base.Consts.EXCEPTION_CODE_SPLITTER;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.PROPERTY_DEFAULT_VALUE_ANNOTATION_PROCESSOR_DEBUG;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG;
 import static javax.lang.model.SourceVersion.RELEASE_8;
@@ -55,7 +54,11 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return CollUtil.newHashSet(PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX);
+        return CollUtil.newHashSet(
+            Consts.PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX,
+            Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL,
+            Consts.PROCESSOR_ARG_NAME_MODULE_ID
+        );
     }
 
     @Override

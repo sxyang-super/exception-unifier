@@ -17,3 +17,7 @@
     - [ ] feedback module exception codes
     - [ ] feedback module exception message templates
     - [ ] internationalize exception messages support~~
+
+## Backlog
+  - [ ] auto detect module id if absent
+  - [ ] ensure works fine in offline mode

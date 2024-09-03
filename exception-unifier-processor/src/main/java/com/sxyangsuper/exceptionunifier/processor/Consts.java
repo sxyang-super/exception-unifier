@@ -6,14 +6,33 @@ import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class Consts {
-    public static final String PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG = "annotation.processor.debug";
-    public static final String PROPERTY_DEFAULT_VALUE_ANNOTATION_PROCESSOR_DEBUG = "false";
+    /* Processor */
+
     /* default */
     static final String LOG_PREFIX = "[EX UNIFIER]";
-    /* default */
-    static final String PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX = "exceptionCodePrefix";
     /* default */
     static final String JC_TREE_PREFIX_ENUM_VARIABLE = "/*public static final*/";
     /* default */
     static final String JC_VARIABLE_NAME_CODE = "code";
+
+    /* System properties */
+
+    public static final String PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG = "annotation.processor.debug";
+    public static final String PROPERTY_DEFAULT_VALUE_ANNOTATION_PROCESSOR_DEBUG = "false";
+
+    /* Processor args */
+
+    /* default */
+    static final String PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX = "exceptionCodePrefix";
+    /* default */
+    static final String PROCESSOR_ARG_NAME_REMOTE_BASE_URL = "exceptionCodeRemoteBaseUrl";
+    /* default */
+    static final String PROCESSOR_ARG_NAME_MODULE_ID = "exceptionCodeModuleId";
+
+    /* Remote exception code prefix supplier */
+
+    /* default */
+    static final String REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX = "/prefix";
+    /* default */
+    static final String REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID = "moduleId";
 }

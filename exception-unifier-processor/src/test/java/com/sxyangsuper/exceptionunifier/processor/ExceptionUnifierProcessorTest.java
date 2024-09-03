@@ -2,10 +2,14 @@ package com.sxyangsuper.exceptionunifier.processor;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.objectweb.asm.ClassReader;
@@ -18,19 +22,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX;
 import static com.sxyangsuper.exceptionunifier.processor.TestUtil.getPackageCorrespondingTestDirectoryPath;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExceptionUnifierProcessorTest {
-    // create directory for each test case manually
-    // create compile source file in corresponding directory
-    // setup: set source directory for each test case
-    // scan source directory, and extract meta for generating JavaFileObject
-    // for happy path, check generated content
-    // for unhappy path, check thrown exception
 
     JavaFileObject[] javaFileObjects;
     ExceptionUnifierProcessor exceptionUnifierProcessor;
@@ -266,5 +267,121 @@ class ExceptionUnifierProcessorTest {
         printWriter.close();
 
         return out.toString();
+    }
+
+    @Nested
+    @WireMockTest
+    class RemoteExceptionCodePrefixSupplierTest {
+
+        @Test
+        void should_throw_exception_given_no_module_id() {
+            final RuntimeException compileException = assertThrows(RuntimeException.class,
+                () -> javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=http://localhost", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL),
+                        String.format("-A%s=", Consts.PROCESSOR_ARG_NAME_MODULE_ID)
+                    )
+                    .compile(javaFileObjects)
+            );
+
+            final Throwable cause = compileException.getCause();
+            assertInstanceOf(ExUnifierProcessException.class, cause);
+
+            Assertions.assertEquals(
+                String.format("Blank module id, please provide it with compile arg %s", Consts.PROCESSOR_ARG_NAME_MODULE_ID),
+                cause.getMessage()
+            );
+        }
+
+        @Test
+        void should_throw_exception_given_get_exception_code_prefix_from_remote_fail(
+            final WireMockRuntimeInfo wmRuntimeInfo
+        ) {
+            final String moduleId = "com.sample";
+
+            stubFor(WireMock.get(String.format(
+                    "%s?%s=%s",
+                    REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX,
+                    REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID,
+                    moduleId
+                ))
+                .willReturn(WireMock.badRequest()));
+
+            final RuntimeException compileException = assertThrows(RuntimeException.class,
+                () -> javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                    )
+                    .compile(javaFileObjects)
+            );
+
+            final Throwable cause = compileException.getCause();
+            assertInstanceOf(ExUnifierProcessException.class, cause);
+
+            Assertions.assertEquals(
+                String.format("Fail to get exception code prefix for module %s, response status is 400", moduleId),
+                cause.getMessage()
+            );
+        }
+
+        @Test
+        void should_throw_exception_given_get_exception_code_prefix_from_wrong_remote() {
+            final RuntimeException compileException = assertThrows(RuntimeException.class,
+                () -> javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, "http://localhost:9999"),
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, "com.sample")
+                    )
+                    .compile(javaFileObjects)
+            );
+
+            final Throwable cause = compileException.getCause();
+            assertInstanceOf(ExUnifierProcessException.class, cause);
+
+            Assertions.assertEquals(
+                String.format("Fail to get exception code prefix for module %s, remote request failed", "com.sample"),
+                cause.getMessage()
+            );
+        }
+
+        @Test
+        void should_process_successfully(
+            final WireMockRuntimeInfo wmRuntimeInfo
+        ) throws IOException {
+            final String moduleId = "com.sample";
+            final String mockedExceptionCodePrefix = "A";
+
+            stubFor(WireMock.get(String.format(
+                    "%s?%s=%s",
+                    REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX,
+                    REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID,
+                    moduleId
+                ))
+                .willReturn(WireMock.ok(mockedExceptionCodePrefix)));
+
+            final Compilation compilation = javac()
+                .withProcessors(exceptionUnifierProcessor)
+                .withOptions(
+                    "-Xlint",
+                    String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                    String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                )
+                .compile(javaFileObjects);
+
+            assertThat(compilation).succeeded();
+            assertThat(compilation).hadNoteCount(13);
+
+            final JavaFileObject enumJavaFileObject = compilation.generatedFiles().toArray(new JavaFileObject[0])[0];
+            String output = getJavaFileObjectGeneratedFilesSourceAsString(enumJavaFileObject);
+            System.out.println(output);
+            Assertions.assertTrue(output.contains("A:A:A"));
+        }
     }
 }

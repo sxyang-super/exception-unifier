@@ -6,4 +6,8 @@ class ExUnifierProcessException extends RuntimeException {
     public ExUnifierProcessException(final String message) {
         super(message);
     }
+
+    public ExUnifierProcessException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
