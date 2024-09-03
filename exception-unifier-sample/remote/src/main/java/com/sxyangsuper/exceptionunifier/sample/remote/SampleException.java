@@ -1,4 +1,4 @@
-package com.sxyangsuper.exceptionunifier.sample;
+package com.sxyangsuper.exceptionunifier.sample.remote;
 
 import com.sxyangsuper.exceptionunifier.base.BaseException;
 

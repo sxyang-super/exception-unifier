@@ -1,4 +1,4 @@
-package com.sxyangsuper.exceptionunifier.sample;
+package com.sxyangsuper.exceptionunifier.sample.base;
 
 import com.sxyangsuper.exceptionunifier.processor.ExceptionSource;
 import lombok.Getter;
