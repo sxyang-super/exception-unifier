@@ -44,18 +44,20 @@ The most important is exception code exposed to client is always unique.
 
 To use this project, add the following dependency to your Maven build file.
 
+Current working well with Jdk8 and maven@3.6.3.
+
 ```xml
 <project>
     <dependencies>
         <dependency>
             <groupId>com.github.sxyang-super</groupId>
             <artifactId>exception-unifier</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.sxyang-super</groupId>
             <artifactId>exception-unifier-processor</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -69,6 +71,7 @@ To use this project, add the following dependency to your Maven build file.
                 <version>3.13.0</version>
                 <configuration>
                     <compilerArgs>
+                        <!-- This is an example for base usage, for other usages, use different compile arg -->
                         <compilerArg>-AexceptionCodePrefix=SAMPLE</compilerArg>
                     </compilerArgs>
                 </configuration>
