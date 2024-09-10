@@ -22,3 +22,4 @@
   - [ ] auto detect module id if absent
   - [ ] ensure works fine in offline mode
   - [ ] upgrade supported java version to JDK11
+  - [ ] same pattern for Nodejs + Typescript
