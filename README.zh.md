@@ -149,4 +149,4 @@ public class Sample {
     }
 }
 ````
-7. 更多例子可以参考[exception-unifier-sample](https://github.com/sxyang-super/exception-unifier/tree/master/exception-unifier-sample)
+7. 更多例子可以参考[exception-unifier-sample](exception-unifier-sample/README.zh.md)
