@@ -8,8 +8,8 @@
 
 ## Phase 2: Exception code prefix supplier pattern and simple centralized exception code manage project
 - **Q4 2024**
-    - [ ] Introduce exception code prefix supplier pattern in module exception-unifier-processor
-    - [ ] Introduce remote exception code prefix supplier
+    - [x] Introduce exception code prefix supplier pattern in module exception-unifier-processor
+    - [x] Introduce remote exception code prefix supplier
     - [ ] Setup simple centralized exception code manage project
 
 ## Phase 3: Processor enhancement
