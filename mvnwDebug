@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Set MAVEN_OPTS for debugging
+export MAVEN_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000"
+
+# Execute mvnw with the provided arguments
+./mvnw "$@"
+
+# Clean up MAVEN_OPTS after execution to avoid leaving debug options set
+unset MAVEN_OPTS
