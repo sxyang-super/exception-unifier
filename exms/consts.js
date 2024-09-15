@@ -1,0 +1,1 @@
+module.exports.EXCEPTION_CODE_PREFIX_SEPARATOR = ':'
