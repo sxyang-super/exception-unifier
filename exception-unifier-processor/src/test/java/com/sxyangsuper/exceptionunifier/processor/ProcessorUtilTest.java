@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static com.sxyangsuper.exceptionunifier.processor.Consts.JC_TREE_PREFIX_ENUM_VARIABLE;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.JC_VARIABLE_NAME_CODE;
-import static com.sxyangsuper.exceptionunifier.processor.ProcessorUtil.getCodeIndex;
+import static com.sxyangsuper.exceptionunifier.processor.ProcessorUtil.getCodeArgIndex;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -32,7 +32,7 @@ class ProcessorUtilTest {
             when(jcClassDeclSimpleName.toString()).thenReturn("Sample");
             when(jcClassDecl.defs.stream()).thenReturn(Stream.of());
 
-            assertThrows(ExUnifierProcessException.class, () -> getCodeIndex(jcClassDecl));
+            assertThrows(ExUnifierProcessException.class, () -> getCodeArgIndex(jcClassDecl));
         }
 
         @Test
@@ -48,7 +48,7 @@ class ProcessorUtilTest {
             when(jcClassDecl.defs.stream()).thenReturn(Stream.of(def));
             when(def.getKind()).thenReturn(Tree.Kind.ENUM);
 
-            assertThrows(ExUnifierProcessException.class, () -> getCodeIndex(jcClassDecl));
+            assertThrows(ExUnifierProcessException.class, () -> getCodeArgIndex(jcClassDecl));
         }
 
         @Test
@@ -65,7 +65,7 @@ class ProcessorUtilTest {
             when(def.getKind()).thenReturn(Tree.Kind.VARIABLE);
             when(def.toString()).thenReturn(JC_TREE_PREFIX_ENUM_VARIABLE);
 
-            assertThrows(ExUnifierProcessException.class, () -> getCodeIndex(jcClassDecl));
+            assertThrows(ExUnifierProcessException.class, () -> getCodeArgIndex(jcClassDecl));
         }
 
         @Test
@@ -84,7 +84,7 @@ class ProcessorUtilTest {
             when(def.toString()).thenReturn("");
             when(def.name.toString()).thenReturn("");
 
-            assertThrows(ExUnifierProcessException.class, () -> getCodeIndex(jcClassDecl));
+            assertThrows(ExUnifierProcessException.class, () -> getCodeArgIndex(jcClassDecl));
         }
 
         @Test
@@ -103,7 +103,7 @@ class ProcessorUtilTest {
             when(def.toString()).thenReturn("");
             when(def.name.toString()).thenReturn(JC_VARIABLE_NAME_CODE);
 
-            final int codeIndex = getCodeIndex(jcClassDecl);
+            final int codeIndex = getCodeArgIndex(jcClassDecl);
 
             assertSame(codeIndex, 0);
         }

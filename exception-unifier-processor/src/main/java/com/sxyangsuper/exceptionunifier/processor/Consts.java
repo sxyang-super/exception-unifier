@@ -14,6 +14,8 @@ public class Consts {
     static final String JC_TREE_PREFIX_ENUM_VARIABLE = "/*public static final*/";
     /* default */
     static final String JC_VARIABLE_NAME_CODE = "code";
+    /* default */
+    static final String JC_VARIABLE_NAME_MESSAGE = "message";
 
     /* System properties */
 
@@ -33,6 +35,9 @@ public class Consts {
 
     /* default */
     static final String REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX = "/prefix";
+
+    /* default */
+    static final String REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS = "/exception-enums/bulk";
     /* default */
     static final String REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID = "moduleId";
 }
