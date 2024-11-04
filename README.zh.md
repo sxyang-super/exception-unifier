@@ -48,12 +48,12 @@
 <project>
     <dependencies>
         <dependency>
-            <groupId>com.github.sxyang-super</groupId>
+            <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.sxyang-super</groupId>
+            <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier-processor</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>

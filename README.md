@@ -50,12 +50,12 @@ Current working well with Jdk8 and maven@3.6.3.
 <project>
     <dependencies>
         <dependency>
-            <groupId>com.github.sxyang-super</groupId>
+            <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier</artifactId>
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.sxyang-super</groupId>
+            <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier-processor</artifactId>
             <version>1.1.0</version>
             <scope>provided</scope>
@@ -153,3 +153,7 @@ public class Sample {
 }
 ````
 7. more example can be seen in [exception-unifier-sample](exception-unifier-sample/README.md)
+
+## Contribution
+
+Please refer to [Contribution](./README.CONTRIBUTION.md)
