@@ -5,20 +5,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping
+@RequestMapping("prefix")
 @RestController
 public class ExceptionCodePrefixController {
 
-    @GetMapping("prefix")
+    @GetMapping
     public String get(@RequestParam String moduleId) {
         if (moduleId.equals("io.github.sxyang-super.exception-unifier-sample")) {
             return "SAMPLE-REMOTE";
         }
         throw new RuntimeException(String.format("unrecognized module id %s", moduleId));
-    }
-
-    @GetMapping("healthcheck")
-    public String healthcheck() {
-        return "OK";
     }
 }

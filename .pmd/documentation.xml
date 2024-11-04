@@ -36,6 +36,12 @@ A rule for the politically correct... we don't want to offend anyone.
 Determines whether the dimensions of non-header comments found are within the specified limits.
         </description>
         <priority>3</priority>
+        <properties>
+            <property name="maxLineLength">
+                <value>180</value>
+            </property>
+            <property name="ignoreExplicitConstructorInvocation" type="Boolean" description="Ignore explicit constructor invocation when deciding whether constructor is empty or not" value="false"/>
+        </properties>
         <example>
 <![CDATA[
 /**

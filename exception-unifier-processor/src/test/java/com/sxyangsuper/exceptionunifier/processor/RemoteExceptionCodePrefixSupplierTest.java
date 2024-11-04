@@ -19,7 +19,7 @@ class RemoteExceptionCodePrefixSupplierTest {
     @BeforeEach
     void setUp() {
         processingEnvironment = Mockito.mock(ProcessingEnvironment.class);
-        remoteExceptionCodePrefixSupplier = new RemoteExceptionCodePrefixSupplier(processingEnvironment);
+        remoteExceptionCodePrefixSupplier = new RemoteExceptionCodePrefixSupplier(processingEnvironment, Mockito.mock(Logger.class));
     }
 
     @Test
@@ -32,6 +32,5 @@ class RemoteExceptionCodePrefixSupplierTest {
             String.format("Blank remote base url, please provide it with compile arg %s", PROCESSOR_ARG_NAME_REMOTE_BASE_URL),
             exception.getMessage()
         );
-
     }
 }

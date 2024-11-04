@@ -2,6 +2,8 @@ package com.sxyangsuper.exceptionunifier.processor;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.http.HttpStatus;
+import cn.hutool.json.JSONUtil;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -21,12 +23,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS;
 import static com.sxyangsuper.exceptionunifier.processor.TestUtil.getPackageCorrespondingTestDirectoryPath;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -129,6 +137,40 @@ class ExceptionUnifierProcessorTest {
             cause.getMessage()
         );
     }
+
+    @Test
+    void should_throw_exception_given_exception_code_value_is_blank() {
+        final RuntimeException compileException = assertThrows(RuntimeException.class, () -> javac()
+            .withProcessors(exceptionUnifierProcessor)
+            .withOptions("-Xlint", String.format("-A%s=A", Consts.PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX))
+            .compile(javaFileObjects));
+
+        final Throwable cause = compileException.getCause();
+        assertInstanceOf(ExUnifierProcessException.class, cause);
+
+        Assertions.assertEquals(
+            "Invalid exception enum source.com.sxyangsuper.exceptionunifier.processor.ExceptionUnifierProcessorTest.should_throw_exception_given_exception_code_value_is_blank.SampleExceptionEnum, contains enum with blank exception code",
+            cause.getMessage()
+        );
+    }
+
+    @Test
+    void should_throw_exception_given_exception_code_value_contains_reserved_splitter() {
+        final RuntimeException compileException = assertThrows(RuntimeException.class, () -> javac()
+            .withProcessors(exceptionUnifierProcessor)
+            .withOptions("-Xlint", String.format("-A%s=A", Consts.PROCESSOR_ARG_NAME_EXCEPTION_CODE_PREFIX))
+            .compile(javaFileObjects));
+
+        final Throwable cause = compileException.getCause();
+        assertInstanceOf(ExUnifierProcessException.class, cause);
+
+        Assertions.assertEquals(
+            "Invalid exception enum source.com.sxyangsuper.exceptionunifier.processor.ExceptionUnifierProcessorTest.should_throw_exception_given_exception_code_value_contains_reserved_splitter.SampleExceptionEnum, contains enum has code A:B contains reserved character: \":\"",
+            cause.getMessage()
+        );
+    }
+
+
 
     @Test
     void should_throw_exception_given_there_is_duplicate_code_in_one_enum() {
@@ -307,7 +349,7 @@ class ExceptionUnifierProcessorTest {
                     REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID,
                     moduleId
                 ))
-                .willReturn(WireMock.badRequest()));
+                .willReturn(WireMock.badRequest().withBody("This is a test error")));
 
             final RuntimeException compileException = assertThrows(RuntimeException.class,
                 () -> javac()
@@ -324,7 +366,7 @@ class ExceptionUnifierProcessorTest {
             assertInstanceOf(ExUnifierProcessException.class, cause);
 
             Assertions.assertEquals(
-                String.format("Fail to get exception code prefix for module %s, response status is 400", moduleId),
+                String.format("Fail to get exception code prefix for module %s, response status is 400, message is This is a test error", moduleId),
                 cause.getMessage()
             );
         }
@@ -376,12 +418,154 @@ class ExceptionUnifierProcessorTest {
                 .compile(javaFileObjects);
 
             assertThat(compilation).succeeded();
-            assertThat(compilation).hadNoteCount(13);
+            assertThat(compilation).hadNoteCount(14);
 
             final JavaFileObject enumJavaFileObject = compilation.generatedFiles().toArray(new JavaFileObject[0])[0];
             String output = getJavaFileObjectGeneratedFilesSourceAsString(enumJavaFileObject);
-            System.out.println(output);
             Assertions.assertTrue(output.contains("A:A:A"));
+        }
+
+        @Nested
+        class CollectExceptionCodesTest {
+
+            final String moduleId = "com.sample";
+            final String mockedExceptionCodePrefix = "A";
+
+            @BeforeEach
+            void setUp() {
+                stubFor(WireMock.get(String.format(
+                        "%s?%s=%s",
+                        REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX,
+                        REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID,
+                        moduleId
+                    ))
+                    .willReturn(WireMock.ok(mockedExceptionCodePrefix)));
+            }
+
+            @Test
+            void should_log_warning_given_not_providing_corresponding_endpoint_from_server(
+                final WireMockRuntimeInfo wmRuntimeInfo
+            ) {
+                final Compilation compilation = javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                    )
+                    .compile(javaFileObjects);
+
+                assertThat(compilation).succeeded();
+                assertThat(compilation).hadNoteContaining(
+                    String.format("[WARNING] [EX UNIFIER] Not found endpoint %s/exception-enums/bulk to report exception enums",
+                        wmRuntimeInfo.getHttpBaseUrl())
+                );
+            }
+
+            @Test
+            void should_throw_exception_given_report_exception_enums_fails(
+                final WireMockRuntimeInfo wmRuntimeInfo
+            ) {
+                stubFor(WireMock.post(REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS)
+                    .willReturn(
+                        WireMock.badRequest()
+                            .withBody("Test fail reason")
+                    ));
+
+                final RuntimeException compileException = assertThrows(RuntimeException.class,
+                    () -> javac()
+                        .withProcessors(exceptionUnifierProcessor)
+                        .withOptions(
+                            "-Xlint",
+                            String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                            String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                        )
+                        .compile(javaFileObjects)
+                );
+
+                final Throwable cause = compileException.getCause();
+                assertInstanceOf(ExUnifierProcessException.class, cause);
+
+                Assertions.assertEquals(
+                    String.format(
+                        "Fail to report exception enums, response status is %s, message is %s",
+                        HttpStatus.HTTP_BAD_REQUEST,
+                        "Test fail reason"
+                    ),
+                    cause.getMessage()
+                );
+
+                final ExceptionCodeReportMeta expectedCodeReportMeta = new ExceptionCodeReportMeta()
+                    .setModuleId("com.sample")
+                    .setPrefix("A")
+                    .setMetaSources(Collections.singletonList(
+                        new ExceptionCodeReportMeta.MetaSource()
+                            .setSource("A")
+                            .setExceptionCodes(Collections.singletonList(
+                                new ExceptionCodeReportMeta.ExceptionCode()
+                                    .setCode("A:A:A")
+                                    .setMessagePlaceholder("This is test message {0}")
+                            ))
+                    ));
+                verify(
+                    postRequestedFor(
+                        urlEqualTo(REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS)
+                    )
+                    .withRequestBody(WireMock.equalToJson(JSONUtil.toJsonStr(expectedCodeReportMeta)))
+                );
+            }
+
+            @Test
+            void should_report_successfully(final WireMockRuntimeInfo wmRuntimeInfo) {
+                stubFor(WireMock.post(REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS)
+                    .willReturn(
+                        WireMock.created()
+                    ));
+
+                final Compilation compilation = javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                    )
+                    .compile(javaFileObjects);
+
+                assertThat(compilation).succeeded();
+                assertThat(compilation).hadNoteContaining("Successfully report 4 exception enums to server");
+
+                final ExceptionCodeReportMeta expectedCodeReportMeta = new ExceptionCodeReportMeta()
+                    .setModuleId("com.sample")
+                    .setPrefix("A")
+                    .setMetaSources(Arrays.asList(
+                        new ExceptionCodeReportMeta.MetaSource()
+                            .setSource("A")
+                            .setExceptionCodes(Arrays.asList(
+                                new ExceptionCodeReportMeta.ExceptionCode()
+                                    .setCode("A:A:A")
+                                    .setMessagePlaceholder("This is test message {0}"),
+                                new ExceptionCodeReportMeta.ExceptionCode()
+                                    .setCode("A:A:B")
+                                    .setMessagePlaceholder("This is test b message {0}")
+                            )),
+                        new ExceptionCodeReportMeta.MetaSource()
+                            .setSource("B")
+                            .setExceptionCodes(Arrays.asList(
+                                new ExceptionCodeReportMeta.ExceptionCode()
+                                    .setCode("A:B:A")
+                                    .setMessagePlaceholder("This is test message {0}"),
+                                new ExceptionCodeReportMeta.ExceptionCode()
+                                    .setCode("A:B:B")
+                                    .setMessagePlaceholder("This is test b message {0}")
+                            ))
+                    ));
+                verify(
+                    postRequestedFor(
+                        urlEqualTo(REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS)
+                    )
+                        .withRequestBody(WireMock.equalToJson(JSONUtil.toJsonStr(expectedCodeReportMeta)))
+                );
+            }
         }
     }
 }
