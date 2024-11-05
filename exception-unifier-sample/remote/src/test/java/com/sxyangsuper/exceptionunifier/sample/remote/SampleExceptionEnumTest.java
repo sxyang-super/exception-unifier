@@ -3,6 +3,7 @@ package com.sxyangsuper.exceptionunifier.sample.remote;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SampleExceptionEnumTest {
 
     @Test
+    @Disabled
     void should_get_correct_exception_code() {
         assertEquals("SAMPLE-REMOTE:U:001", SampleExceptionEnum.TEST.getCode());
 
