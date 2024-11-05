@@ -21,7 +21,7 @@ public class ExceptionEnumsController {
     @ResponseStatus(HttpStatus.CREATED)
     public void bulk(@RequestBody ExceptionCodeReportMeta reportMeta) throws IOException {
         final String userDir = System.getProperty("user.dir");
-        final String targetFilePath = String.join(File.separator,userDir, "..", "..", "generated-test-sources", "exceptionCodeReportMeta.json");
+        final String targetFilePath = String.join(File.separator,userDir, "..", "..", "..", "..", "target", "generated-test-sources", "exceptionCodeReportMeta.json");
         FileUtil.mkParentDirs(targetFilePath);
 
         final File file = FileUtil.newFile(targetFilePath);

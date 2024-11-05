@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.sxyang-super</groupId>
         <artifactId>exception-unifier-sample</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sample-remote</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -19,6 +19,13 @@
         <exception-code-server.health-check-executable>
             ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
         </exception-code-server.health-check-executable>
+        <exception-code-server.start-executable>
+            ${basedir}/../../mvnw.cmd
+        </exception-code-server.start-executable>
+        <exception-code-server.stop-executable>
+            ${basedir}/src/main/resources/exception-code-remote-server/stop_server.bat
+        </exception-code-server.stop-executable>
+        <exception-code-server.port>8090</exception-code-server.port>
     </properties>
 
     <build>
@@ -32,7 +39,7 @@
                     <target>${maven.compiler.target}</target>
                     <encoding>${maven.encoding}</encoding>
                     <compilerArgs>
-                        <compilerArg>-AexceptionCodeRemoteBaseUrl=http://localhost:8080</compilerArg>
+                        <compilerArg>-AexceptionCodeRemoteBaseUrl=http://localhost:${exception-code-server.port}</compilerArg>
                         <compilerArg>-AexceptionCodeModuleId=io.github.sxyang-super.exception-unifier-sample
                         </compilerArg>
                     </compilerArgs>
@@ -45,6 +52,26 @@
                 <version>3.5.0</version>
                 <executions>
                     <execution>
+                        <id>start-standby-exception-code-server</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}/src/main/resources/exception-code-remote-server
+                            </workingDirectory>
+                            <executable>${exception-code-server.start-executable}</executable>
+                            <arguments>
+                                <argument>clean</argument>
+                                <argument>spring-boot:run</argument>
+                                <argument>-Dspring-boot.run.jvmArguments='-Dserver.port=${exception-code-server.port}'</argument>
+                            </arguments>
+                            <async>true</async>
+                            <!--This config is not working-->
+                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>check-standby-exception-code-server</id>
                         <phase>process-resources</phase>
                         <goals>
@@ -54,8 +81,29 @@
                             <workingDirectory>${basedir}/src/main/resources/exception-code-remote-server
                             </workingDirectory>
                             <executable>${exception-code-server.health-check-executable}</executable>
-                            <inheritIo>true</inheritIo>
-                            <timeout>60000</timeout>
+                            <arguments>
+                                <argument>http://localhost:${exception-code-server.port}/healthcheck</argument>
+                                <argument>60</argument>
+                            </arguments>
+                            <async>false</async>
+                        </configuration>
+                    </execution>
+                    <!-- you may get error like `org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1)`, can be ignored -->
+                    <!-- if your compile process fails, need to manually close process listening to port ${exception-code-server.port} -->
+                    <execution>
+                        <id>stop-standby-exception-code-server</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}/src/main/resources/exception-code-remote-server
+                            </workingDirectory>
+                            <executable>${exception-code-server.stop-executable}</executable>
+                            <arguments>
+                                <argument>${exception-code-server.port}</argument>
+                            </arguments>
+                            <async>false</async>
                         </configuration>
                     </execution>
                 </executions>
@@ -75,6 +123,12 @@
                 <exception-code-server.health-check-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
                 </exception-code-server.health-check-executable>
+                <exception-code-server.start-executable>
+                    ${basedir}/../../mvnw.cmd
+                </exception-code-server.start-executable>
+                <exception-code-server.stop-executable>
+                    ${basedir}/src/main/resources/exception-code-remote-server/stop_server.bat
+                </exception-code-server.stop-executable>
             </properties>
         </profile>
         <profile>
@@ -88,6 +142,12 @@
                 <exception-code-server.health-check-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.sh
                 </exception-code-server.health-check-executable>
+                <exception-code-server.start-executable>
+                    ${basedir}/../../mvnw
+                </exception-code-server.start-executable>
+                <exception-code-server.stop-executable>
+                    ${basedir}/src/main/resources/exception-code-remote-server/stop_server.sh
+                </exception-code-server.stop-executable>
             </properties>
         </profile>
     </profiles>
