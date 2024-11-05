@@ -17,13 +17,13 @@
         <maven.compiler.target>8</maven.compiler.target>
         <!--default to windows-->
         <exception-code-server.health-check-executable>
-            ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
+            ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.bat
         </exception-code-server.health-check-executable>
         <exception-code-server.start-executable>
             ${basedir}/../../mvnw.cmd
         </exception-code-server.start-executable>
         <exception-code-server.stop-executable>
-            ${basedir}/src/main/resources/exception-code-remote-server/stop_server.bat
+            ${basedir}/src/main/resources/exception-code-remote-server/stop.bat
         </exception-code-server.stop-executable>
         <exception-code-server.port>8090</exception-code-server.port>
     </properties>
@@ -121,13 +121,13 @@
             </activation>
             <properties>
                 <exception-code-server.health-check-executable>
-                    ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
+                    ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.bat
                 </exception-code-server.health-check-executable>
                 <exception-code-server.start-executable>
                     ${basedir}/../../mvnw.cmd
                 </exception-code-server.start-executable>
                 <exception-code-server.stop-executable>
-                    ${basedir}/src/main/resources/exception-code-remote-server/stop_server.bat
+                    ${basedir}/src/main/resources/exception-code-remote-server/stop.bat
                 </exception-code-server.stop-executable>
             </properties>
         </profile>
@@ -140,13 +140,13 @@
             </activation>
             <properties>
                 <exception-code-server.health-check-executable>
-                    ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.sh
+                    ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.sh
                 </exception-code-server.health-check-executable>
                 <exception-code-server.start-executable>
                     ${basedir}/../../mvnw
                 </exception-code-server.start-executable>
                 <exception-code-server.stop-executable>
-                    ${basedir}/src/main/resources/exception-code-remote-server/stop_server.sh
+                    ${basedir}/src/main/resources/exception-code-remote-server/stop.sh
                 </exception-code-server.stop-executable>
             </properties>
         </profile>
