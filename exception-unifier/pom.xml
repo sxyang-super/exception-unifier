@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>exception-unifier</artifactId>
-    <version>${parent.version}</version>
+    <version>1.1.0</version>
 
     <description>base exception unifier project</description>
     <url>https://github.com/sxyang-super/exception-unifier</url>
@@ -48,6 +48,8 @@
         <junit.jupiter.version>5.11.0-RC1</junit.jupiter.version>
         <slf4j.version>2.1.0-alpha1</slf4j.version>
         <maven.encoding>UTF-8</maven.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
@@ -153,7 +155,7 @@
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.5</version>
                 <configuration>
-                    <keyname>sxyang-super</keyname>
+                    <keyname>exception-unifier-maven-gpg</keyname>
                 </configuration>
                 <executions>
                     <execution>

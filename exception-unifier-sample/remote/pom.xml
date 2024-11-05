@@ -10,11 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sample-remote</artifactId>
-    <version>${parent.version}</version>
+    <version>1.1.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <!--default to windows-->
+        <exception-code-server.health-check-executable>
+            ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
+        </exception-code-server.health-check-executable>
     </properties>
 
     <build>
@@ -29,43 +33,62 @@
                     <encoding>${maven.encoding}</encoding>
                     <compilerArgs>
                         <compilerArg>-AexceptionCodeRemoteBaseUrl=http://localhost:8080</compilerArg>
-                        <compilerArg>-AexceptionCodeModuleId=io.github.sxyang-super.exception-unifier-sample</compilerArg>
+                        <compilerArg>-AexceptionCodeModuleId=io.github.sxyang-super.exception-unifier-sample
+                        </compilerArg>
                     </compilerArgs>
                 </configuration>
             </plugin>
+
             <plugin>
-                <groupId>com.bazaarvoice.maven.plugins</groupId>
-                <artifactId>process-exec-maven-plugin</artifactId>
-                <version>0.7</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>start-server</id>
+                        <id>check-standby-exception-code-server</id>
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>start</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <name>start-server</name>
-                            <workingDir>classes/exception-code-remote-server</workingDir>
-                            <waitForInterrupt>false</waitForInterrupt>
-                            <healthcheckUrl>http://localhost:8080/healthcheck</healthcheckUrl>
-                            <arguments>
-                                <argument>../../../../../mvnw</argument>
-                                <argument>clean</argument>
-                                <argument>install</argument>
-                                <argument>spring-boot:run</argument>
-                            </arguments>
+                            <workingDirectory>${basedir}/src/main/resources/exception-code-remote-server
+                            </workingDirectory>
+                            <executable>${exception-code-server.health-check-executable}</executable>
+                            <inheritIo>true</inheritIo>
+                            <timeout>60000</timeout>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-server</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>stop-all</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <exception-code-server.health-check-executable>
+                    ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.bat
+                </exception-code-server.health-check-executable>
+            </properties>
+        </profile>
+        <profile>
+            <id>unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <exception-code-server.health-check-executable>
+                    ${basedir}/src/main/resources/exception-code-remote-server/start_server_with_healthcheck.sh
+                </exception-code-server.health-check-executable>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -8,7 +8,7 @@ For single project or multiple projects but team can assign prefix appropriately
 ## How to verify
 ### Verify steps
 1. cd to the directory of this README file
-2. run commandline (suppose you already [exception-unifier](https://github.com/sxyang-super/exception-unifier))
+2. run commandline (suppose you already have [exception-unifier](https://github.com/sxyang-super/exception-unifier) in your local machine)
 ```shell
 ../../mvnw clean verify
 ```
