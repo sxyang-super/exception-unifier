@@ -4,11 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import cn.hutool.http.ContentType;
-import cn.hutool.http.HttpException;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpStatus;
+import cn.hutool.http.*;
 import cn.hutool.json.JSONUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,11 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.sxyangsuper.exceptionunifier.base.Consts.EXCEPTION_CODE_SPLITTER;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.PROCESSOR_ARG_NAME_MODULE_ID;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX;
-import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.*;
 
 /**
  * using endpoints:
@@ -44,9 +36,7 @@ public class RemoteExceptionCodePrefixSupplier extends AbstractExceptionCodePref
             return this.prefix;
         }
 
-        final Map<String, String> environmentOptions = this.processingEnv.getOptions();
-
-        final String remoteBaseUrl = getRemoteBaseUrl(environmentOptions);
+        final String remoteBaseUrl = getRemoteBaseUrl();
         final String moduleId = getModuleId();
 
         return this.prefix = getFromRemote(remoteBaseUrl, moduleId);
@@ -73,7 +63,9 @@ public class RemoteExceptionCodePrefixSupplier extends AbstractExceptionCodePref
     }
 
     @NotNull
-    private String getRemoteBaseUrl(final Map<String, String> environmentOptions) {
+    private String getRemoteBaseUrl() {
+        final Map<String, String> environmentOptions = this.processingEnv.getOptions();
+
         final String remoteBaseUrl = environmentOptions.get(PROCESSOR_ARG_NAME_REMOTE_BASE_URL);
 
         if (StrUtil.isBlank(remoteBaseUrl)) {
@@ -132,9 +124,7 @@ public class RemoteExceptionCodePrefixSupplier extends AbstractExceptionCodePref
     }
 
     private void reportToRemoteServer(final List<ExceptionCodeExpressions> exceptionCodeExpressionsList, final ExceptionCodeReportMeta exceptionCodeReportMeta) {
-        final Map<String, String> environmentOptions = this.processingEnv.getOptions();
-
-        final String remoteBaseUrl = this.getRemoteBaseUrl(environmentOptions);
+        final String remoteBaseUrl = this.getRemoteBaseUrl();
 
         final String endpoint = URLUtil.completeUrl(remoteBaseUrl, REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS);
 
@@ -181,7 +171,7 @@ public class RemoteExceptionCodePrefixSupplier extends AbstractExceptionCodePref
         final List<ExceptionCodeReportMeta.MetaSource> metaMetaSources = exceptionCodeExpressionsList
             .stream()
             .collect(Collectors.groupingBy(exceptionCodeExpressions -> {
-                final String code = (String) exceptionCodeExpressions.getCodeExpression().value;
+                final String code = exceptionCodeExpressions.getCodeExpressionValue();
                 return code.split(EXCEPTION_CODE_SPLITTER)[1];
             }))
             .entrySet()
@@ -194,8 +184,8 @@ public class RemoteExceptionCodePrefixSupplier extends AbstractExceptionCodePref
                     .stream()
                     .map(sourceToExceptionCodeExpressions ->
                         new ExceptionCodeReportMeta.ExceptionCode()
-                            .setCode((String) sourceToExceptionCodeExpressions.getCodeExpression().value)
-                            .setMessagePlaceholder((String) sourceToExceptionCodeExpressions.getMessageExpression().value)
+                            .setCode(sourceToExceptionCodeExpressions.getCodeExpressionValue())
+                            .setMessagePlaceholder(sourceToExceptionCodeExpressions.getMessageExpressionValue())
                     )
                     .collect(Collectors.toList());
 

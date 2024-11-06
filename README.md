@@ -156,4 +156,4 @@ public class Sample {
 
 ## Contribution
 
-Please refer to [Contribution](./README.CONTRIBUTION.md)
+Please refer to [Contribution](./CONTRIBUTION)

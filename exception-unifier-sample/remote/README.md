@@ -18,3 +18,12 @@ and will be started automatically after maven lifecycle phase `process-resources
 so that, during compile phase, requests to exception code server will be handled accordingly.
 
 ### Steps to verify
+1. cd to the directory of this README file
+2. run commandline (suppose you already have [exception-unifier](https://github.com/sxyang-super/exception-unifier) in your local machine)
+> ../../mvnw(.cmd) clean verify
+3. check source code and compiled code
+> source code 001: com.sxyangsuper.exceptionunifier.sample.remote.SampleExceptionEnum.TEST
+> compiled code SAMPLE-REMOTE:U:001: com.sxyangsuper.exceptionunifier.sample.remote.SampleExceptionEnum.TEST
+> generated json to record the exception enums report data: exception-unifier-sample/remote/target/generated-test-sources/exceptionCodeReportMeta.json
+4. check test
+> com.sxyangsuper.exceptionunifier.sample.remote.SampleExceptionEnumTest.should_get_correct_exception_code

@@ -108,12 +108,11 @@ class ProcessorUtil {
             .values()
             .stream()
             .flatMap(List::stream)
-            .forEach(variableCodeExpression ->
-                variableCodeExpression.getCodeExpression().value = String.join(
-                    EXCEPTION_CODE_SPLITTER,
-                    exceptionCodePrefix,
-                    variableCodeExpression.getCodeExpression().value.toString()
-                ));
+            .forEach(variableCodeExpression -> variableCodeExpression.setCodeExpressionValue(String.join(
+                EXCEPTION_CODE_SPLITTER,
+                exceptionCodePrefix,
+                variableCodeExpression.getCodeExpressionValue()
+            )));
     }
 
     /* default */
@@ -122,7 +121,7 @@ class ProcessorUtil {
             .values()
             .stream()
             .flatMap(List::stream)
-            .map(expressions -> expressions.getCodeExpression().value.toString())
+            .map(ExceptionCodeExpressions::getCodeExpressionValue)
             // group by exception count, get appear times
             .collect(Collectors.toMap(exceptionCode -> exceptionCode, exceptionCode -> 1, Integer::sum))
             .entrySet()
@@ -183,12 +182,11 @@ class ProcessorUtil {
 
         exceptionCodeExpressionsList
             .forEach(variableCodeExpression ->
-                variableCodeExpression.getCodeExpression().value =
-                    String.join(
-                        EXCEPTION_CODE_SPLITTER,
-                        exceptionSourceCode,
-                        variableCodeExpression.getCodeExpression().value.toString()
-                    )
+                variableCodeExpression.setCodeExpressionValue(String.join(
+                    EXCEPTION_CODE_SPLITTER,
+                    exceptionSourceCode,
+                    variableCodeExpression.getCodeExpressionValue()
+                ))
             );
     }
 
@@ -196,7 +194,7 @@ class ProcessorUtil {
     static void validateExceptionCodeExpressionsList(final Map<TypeElement, List<ExceptionCodeExpressions>> exceptionEnumToExceptionCodeExpressionsLists) {
         exceptionEnumToExceptionCodeExpressionsLists.forEach((enumTypeElement, exceptionCodeExpressionsList) ->
             exceptionCodeExpressionsList.forEach(exceptionCodeExpressions -> {
-                final String exceptionCode = (String) exceptionCodeExpressions.getCodeExpression().value;
+                final String exceptionCode = exceptionCodeExpressions.getCodeExpressionValue();
                 if (StrUtil.isBlank(exceptionCode)) {
                     throw new ExUnifierProcessException(String.format(
                         "Invalid exception enum %s, contains enum with blank exception code",

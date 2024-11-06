@@ -178,4 +178,13 @@ class BaseExceptionTest {
             assertNotEquals(hasCode, exception.hashCode());
         }
     }
+
+    @Test
+    void should_not_change_instance_args_if_we_put_element_to_args_from_getter() {
+        BaseException exception = BaseException.of(BaseException::new, TestExceptionEnum.ERROR_1, 1, 2);
+        assertEquals(2, exception.getArgs()[1]);
+
+        exception.getArgs()[1] = 3;
+        assertEquals(2, exception.getArgs()[1]);
+    }
 }

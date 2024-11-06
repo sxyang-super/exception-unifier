@@ -150,3 +150,7 @@ public class Sample {
 }
 ````
 7. 更多例子可以参考[exception-unifier-sample](exception-unifier-sample/README.zh.md)
+
+## 贡献
+
+请参考 [贡献指南](./CONTRIBUTION.zh.md)

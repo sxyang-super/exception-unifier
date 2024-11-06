@@ -9,11 +9,7 @@ import com.sun.tools.javac.tree.TreeTranslator;
 import com.sxyangsuper.exceptionunifier.base.IExceptionEnumAsserts;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
+import javax.annotation.processing.*;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
@@ -163,9 +159,7 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
                         final JCLiteral codeExpression = (JCLiteral) jcNewClass.args.get(codeFieldIndex);
                         final JCLiteral messageExpression = (JCLiteral) jcNewClass.args.get(messageFieldIndex);
                         enumVariableCodeExpressions.add(
-                            new ExceptionCodeExpressions()
-                                .setCodeExpression(codeExpression)
-                                .setMessageExpression(messageExpression)
+                            new ExceptionCodeExpressions(codeExpression, messageExpression)
                         );
                     }
                 }
