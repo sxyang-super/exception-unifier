@@ -45,8 +45,8 @@ class PatternAssertsTest {
     @Nested
     class TestMatches {
         Pattern pattern;
-        String notMatchTarget = "B";
-        String matchTarget = "A";
+        final String notMatchTarget = "B";
+        final String matchTarget = "A";
 
         @BeforeEach
         void setUp() {
