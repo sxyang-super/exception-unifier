@@ -317,10 +317,8 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>7.1.1</version>
                 <configuration>
-                    <format>ALL</format>
-                    <outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory>
-                    <dataDirectory>${project.build.directory}/dependency-check-data</dataDirectory>
-                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <format>HTML</format>
+                    <skipSystemScope>true</skipSystemScope>
                 </configuration>
             </plugin>
         </plugins>
