@@ -14,13 +14,15 @@
 
 ## Phase 3: Processor enhancement
 - **Q1 2025**
-    - [ ] feedback module exception codes
-    - [ ] feedback module exception message templates
-    - [ ] internationalize exception messages support~~
+    - [x] feedback module exception codes
+    - [x] feedback module exception message templates
+    - [ ] add retry for network requests
 
 ## Backlog
   - [ ] auto detect module id if absent
   - [ ] ensure works fine in offline mode
   - [ ] upgrade supported java version to JDK11
   - [ ] same pattern for Nodejs + Typescript
-  - [ ] add retry for network requests
+  - [ ] support multiple development tools (eclipse and etc...)
+  - [ ] create CI/CD though gitHub action or something else
+  - [ ] internationalize exception messages support~~
