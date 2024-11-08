@@ -7,22 +7,26 @@
 1. Download GPG to your machine [download page](https://gnupg.org/download/index.html#sec-1-2)
 2. Following [guide](https://central.sonatype.org/publish/requirements/gpg/#installing-gnupg) to add key for name `exception-unifier-maven-gpg` 
 
-### 准备 JDK
+### Get JDK ready
 
-目前仅支持 JDK 1.8。
+only jkd1.8 is supported now.
 
-### 准备 Node
+### Get maven ready
 
-如果需要修改 exms（异常管理服务器），则需要准备 Node 环境。
+maven version should be >= 3.6
 
-### 如何直接使用 IDEA 运行测试
+### Get node ready
 
-以下模块的测试可以直接通过 IDEA 运行：
+If we need to modify exms(exception manage server), we need to get node ready.
+
+### How to run test with IDEA directly
+
+Tests of following modules can be run though IDEA directly
 
 1. exception-unifier
 2. exception-unifier-processor
 
-以下模块的测试无法直接通过 IDEA 运行：
+Tests of following modules can not be run though IDEA directly
 
 1. exception-unifier-sample
-   > 需要在另一个 IDEA 窗口中打开该模块，将其作为单独的项目。
+> we need to open this module in another IDEA window to let it as a single project
