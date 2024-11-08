@@ -20,7 +20,7 @@ so that, during compile phase, requests to exception code server will be handled
 ### Steps to verify
 1. cd to the directory of this README file
 2. run commandline (suppose you already have [exception-unifier](https://github.com/sxyang-super/exception-unifier) in your local machine)
-> ../../mvnw(.cmd) clean verify
+> mvn clean verify
 3. check source code and compiled code
 > source code 001: com.sxyangsuper.exceptionunifier.sample.remote.SampleExceptionEnum.TEST
 > compiled code SAMPLE-REMOTE:U:001: com.sxyangsuper.exceptionunifier.sample.remote.SampleExceptionEnum.TEST

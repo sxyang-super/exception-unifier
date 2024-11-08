@@ -19,9 +19,6 @@
         <exception-code-server.health-check-executable>
             ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.bat
         </exception-code-server.health-check-executable>
-        <exception-code-server.start-executable>
-            ${basedir}/../../mvnw.cmd
-        </exception-code-server.start-executable>
         <exception-code-server.stop-executable>
             ${basedir}/src/main/resources/exception-code-remote-server/stop.bat
         </exception-code-server.stop-executable>
@@ -60,7 +57,7 @@
                         <configuration>
                             <workingDirectory>${basedir}/src/main/resources/exception-code-remote-server
                             </workingDirectory>
-                            <executable>${exception-code-server.start-executable}</executable>
+                            <executable>mvn</executable>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>spring-boot:run</argument>
@@ -123,9 +120,6 @@
                 <exception-code-server.health-check-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.bat
                 </exception-code-server.health-check-executable>
-                <exception-code-server.start-executable>
-                    ${basedir}/../../mvnw.cmd
-                </exception-code-server.start-executable>
                 <exception-code-server.stop-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/stop.bat
                 </exception-code-server.stop-executable>
@@ -142,9 +136,6 @@
                 <exception-code-server.health-check-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/healthcheck.sh
                 </exception-code-server.health-check-executable>
-                <exception-code-server.start-executable>
-                    ${basedir}/../../mvnw
-                </exception-code-server.start-executable>
                 <exception-code-server.stop-executable>
                     ${basedir}/src/main/resources/exception-code-remote-server/stop.sh
                 </exception-code-server.stop-executable>

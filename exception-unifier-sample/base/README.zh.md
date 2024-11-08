@@ -12,7 +12,7 @@
 ### 验证步骤
 1. 切换到本 README 文件所在的目录。
 2. 运行命令行（假设你已在本地机器上安装了 [exception-unifier](https://github.com/sxyang-super/exception-unifier)）。
-   > ..\..\mvnw(.cmd) clean verify
+   > mvn clean verify
 3. 检查源代码和编译后的代码：
    > 源代码 001: com/sxyangsuper/exceptionunifier/sample/base/SampleExceptionEnum.java:11  
    > 编译代码 SAMPLE:U:001: exception-unifier-sample/base/target/classes/com/sxyangsuper/exceptionunifier/sample/base/SampleExceptionEnum.class:11

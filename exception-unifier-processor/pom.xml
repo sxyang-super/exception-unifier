@@ -48,7 +48,7 @@
         <junit.jupiter.version>5.11.0-RC1</junit.jupiter.version>
         <slf4j.version>2.1.0-alpha1</slf4j.version>
         <maven.encoding>UTF-8</maven.encoding>
-        <hutool.version>5.8.29</hutool.version>
+        <hutool.version>5.8.33</hutool.version>
         <mockito.version>4.11.0</mockito.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
