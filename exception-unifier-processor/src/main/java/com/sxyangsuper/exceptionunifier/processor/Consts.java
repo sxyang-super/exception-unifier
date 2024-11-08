@@ -16,6 +16,8 @@ public class Consts {
     static final String JC_VARIABLE_NAME_CODE = "code";
     /* default */
     static final String JC_VARIABLE_NAME_MESSAGE = "message";
+    /* default */
+    static final String ANNOTATION_PACKAGE_NAME_PREFIX="com.sxyangsuper.exceptionunifier";
 
     /* System properties */
 

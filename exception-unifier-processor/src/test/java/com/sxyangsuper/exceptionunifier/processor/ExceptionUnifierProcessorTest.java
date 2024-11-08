@@ -32,6 +32,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS;
@@ -47,9 +48,9 @@ class ExceptionUnifierProcessorTest {
     @BeforeEach
     void setUp(TestInfo testInfo) {
         final String packageCorrespondingTestDirectoryPath = getPackageCorrespondingTestDirectoryPath(testInfo);
-        final String testCompilesourceDirectoryPath = String.join(File.separator, System.getProperty("user.dir"), "src", "test", "compile", "source", packageCorrespondingTestDirectoryPath);
+        final String testCompileSourceDirectoryPath = String.join(File.separator, System.getProperty("user.dir"), "src", "test", "compile", "source", packageCorrespondingTestDirectoryPath);
         final String packageName = packageCorrespondingTestDirectoryPath.replace(File.separator, ".");
-        javaFileObjects = FileUtil.loopFiles(testCompilesourceDirectoryPath)
+        javaFileObjects = FileUtil.loopFiles(testCompileSourceDirectoryPath)
             .stream()
             .map(file -> {
                 final String fullQualifiedName = String.join(".", packageName, file.getName().replace(".java", ""));
@@ -60,7 +61,7 @@ class ExceptionUnifierProcessorTest {
 
         exceptionUnifierProcessor = new ExceptionUnifierProcessor();
 
-        System.setProperty("annotation.processor.debug", "true");
+        System.setProperty(PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG, "true");
     }
 
     @Test
@@ -77,9 +78,12 @@ class ExceptionUnifierProcessorTest {
         assertThat(compilation).hadNoteCount(4);
     }
 
+    /**
+     * including no annotation case
+     */
     @Test
     void should_not_log_debug_given_annotation_processor_debug_is_off() {
-        System.setProperty("annotation.processor.debug", "false");
+        System.setProperty(PROPERTY_NAME_ANNOTATION_PROCESSOR_DEBUG, "false");
 
         Compilation compilation = javac()
             .withProcessors(exceptionUnifierProcessor)

@@ -9,7 +9,11 @@ import com.sun.tools.javac.tree.TreeTranslator;
 import com.sxyangsuper.exceptionunifier.base.IExceptionEnumAsserts;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.processing.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sxyangsuper.exceptionunifier.base.Consts.EXCEPTION_CODE_SPLITTER;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.ANNOTATION_PACKAGE_NAME_PREFIX;
 import static javax.lang.model.SourceVersion.RELEASE_8;
 
 @NoArgsConstructor
@@ -52,6 +57,10 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
         }
 
         this.logger.debug(() -> "Start annotation processing...");
+
+        if (CollUtil.isEmpty(annotations)) {
+            return false;
+        }
 
         final List<TypeElement> exceptionEnums = this.findExceptionEnums(roundEnv);
         if (CollUtil.isEmpty(exceptionEnums)) {
@@ -88,7 +97,14 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
 
         this.logger.debug(() -> "End annotation processing...");
 
-        return false;
+        return this.onlyExceptionUnifierAnnotation(annotations);
+    }
+
+    private boolean onlyExceptionUnifierAnnotation(final Set<? extends TypeElement> annotations) {
+        // true if only exception unifier annotation
+        return annotations
+            .stream()
+            .allMatch(annotation -> annotation.getQualifiedName().toString().startsWith(ANNOTATION_PACKAGE_NAME_PREFIX));
     }
 
     private String getExceptionCodePrefix(final IExceptionCodePrefixSupplier exceptionCodePrefixSupplier) {
