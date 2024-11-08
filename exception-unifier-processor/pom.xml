@@ -389,6 +389,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <excludes>
+                        **/**/*Unchecked*.*
+                    </excludes>
                     <outputDirectory>target/site</outputDirectory>
                     <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                     <formats>HTML</formats>
@@ -453,6 +456,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <excludes>
+                        **/**/*Unchecked*.*
+                    </excludes>
                     <includeTests>false</includeTests>
                     <rulesets>
                         <ruleset>${project.basedir}/../.pmd/bestpractices.xml</ruleset>

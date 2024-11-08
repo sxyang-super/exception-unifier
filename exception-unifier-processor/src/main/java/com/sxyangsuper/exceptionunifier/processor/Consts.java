@@ -18,6 +18,8 @@ public class Consts {
     static final String JC_VARIABLE_NAME_MESSAGE = "message";
     /* default */
     static final String ANNOTATION_PACKAGE_NAME_PREFIX="com.sxyangsuper.exceptionunifier";
+    /* default */
+    static final String CLASS_QN_NAME_ORG_JETBRAINS_JPS_JAVAC_API_WRAPPERS = "org.jetbrains.jps.javac.APIWrappers";
 
     /* System properties */
 

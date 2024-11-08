@@ -36,8 +36,9 @@ public class ExceptionUnifierProcessor extends AbstractProcessor {
     @Override
     public void init(final ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        this.javacTrees = JavacTrees.instance(processingEnv);
-        this.logger = new Logger(processingEnv.getMessager());
+        final ProcessingEnvironment unWrappedProcessingEnv = UncheckedUtil.jbUnwrapProcessingEnvironment(processingEnv);
+        this.javacTrees = JavacTrees.instance(unWrappedProcessingEnv);
+        this.logger = new Logger(unWrappedProcessingEnv.getMessager());
     }
 
     @Override
