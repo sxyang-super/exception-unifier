@@ -11,11 +11,11 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class ExceptionCodePrefixSupplierDetector {
 
-    public static IExceptionCodePrefixSupplier detect(final ProcessingEnvironment processingEnv) {
+    public static IExceptionCodePrefixSupplier detect(final ProcessingEnvironment processingEnv, final Logger logger) {
         final String remoteBaseUrl = processingEnv.getOptions().get(PROCESSOR_ARG_NAME_REMOTE_BASE_URL);
         if (StrUtil.isNotBlank(remoteBaseUrl)) {
-            return new RemoteExceptionCodePrefixSupplier(processingEnv);
+            return new RemoteExceptionCodePrefixSupplier(processingEnv, logger);
         }
-        return new ConfigurableExceptionCodePrefixSupplier(processingEnv);
+        return new ConfigurableExceptionCodePrefixSupplier(processingEnv, logger);
     }
 }

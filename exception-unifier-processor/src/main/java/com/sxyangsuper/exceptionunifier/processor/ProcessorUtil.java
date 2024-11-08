@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static com.sxyangsuper.exceptionunifier.base.Consts.EXCEPTION_CODE_SPLITTER;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.JC_TREE_PREFIX_ENUM_VARIABLE;
 import static com.sxyangsuper.exceptionunifier.processor.Consts.JC_VARIABLE_NAME_CODE;
+import static com.sxyangsuper.exceptionunifier.processor.Consts.JC_VARIABLE_NAME_MESSAGE;
 import static javax.lang.model.element.ElementKind.ENUM;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -60,7 +61,16 @@ class ProcessorUtil {
     }
 
     /* default */
-    static int getCodeIndex(final JCClassDecl jcClassDecl) {
+    static int getCodeArgIndex(final JCClassDecl jcClassDecl) {
+        return getEnumFieldArgIndex(JC_VARIABLE_NAME_CODE, jcClassDecl);
+    }
+
+    /* default */
+    static int getMessageArgIndex(final JCClassDecl jcClassDecl) {
+        return getEnumFieldArgIndex(JC_VARIABLE_NAME_MESSAGE, jcClassDecl);
+    }
+
+    private static int getEnumFieldArgIndex(final String fieldName, final JCClassDecl jcClassDecl) {
         final List<JCTree> nonEnumVariables = jcClassDecl.defs
             .stream()
             .filter(ProcessorUtil::isNotEnumVariable)
@@ -68,13 +78,13 @@ class ProcessorUtil {
 
         for (int i = 0; i < nonEnumVariables.size(); i++) {
             final JCVariableDecl variableDecl = (JCVariableDecl) nonEnumVariables.get(i);
-            if (JC_VARIABLE_NAME_CODE.equals(variableDecl.name.toString())) {
+            if (fieldName.equals(variableDecl.name.toString())) {
                 return i;
             }
         }
 
         throw new ExUnifierProcessException(
-            String.format("Can not find %s in %s", JC_VARIABLE_NAME_CODE, jcClassDecl.getSimpleName().toString())
+            String.format("Can not find %s in %s", fieldName, jcClassDecl.getSimpleName().toString())
         );
     }
 
@@ -90,28 +100,28 @@ class ProcessorUtil {
     }
 
     /* default */
-    static void prependExceptionCodePrefix(final String exceptionCodePrefix, final List<Map.Entry<TypeElement, List<JCTree.JCLiteral>>> exceptionEnumToEnumVariableCodeExpressionLists) {
+    static void prependExceptionCodePrefix(
+        final String exceptionCodePrefix,
+        final Map<TypeElement, List<ExceptionCodeExpressions>> exceptionEnumToEnumVariableCodeExpressionLists
+    ) {
         exceptionEnumToEnumVariableCodeExpressionLists
+            .values()
             .stream()
-            .map(Map.Entry::getValue)
             .flatMap(List::stream)
-            .forEach(variableCodeExpression ->
-                variableCodeExpression.value =
-                    String.join(
-                        EXCEPTION_CODE_SPLITTER,
-                        exceptionCodePrefix,
-                        variableCodeExpression.value.toString()
-                    )
-            );
+            .forEach(variableCodeExpression -> variableCodeExpression.setCodeExpressionValue(String.join(
+                EXCEPTION_CODE_SPLITTER,
+                exceptionCodePrefix,
+                variableCodeExpression.getCodeExpressionValue()
+            )));
     }
 
     /* default */
-    static void assertNoDuplicateExceptionCode(final List<Map.Entry<TypeElement, List<JCTree.JCLiteral>>> exceptionEnumToEnumVariableCodeExpressionLists) {
-        exceptionEnumToEnumVariableCodeExpressionLists
+    static void assertNoDuplicateExceptionCode(final Map<TypeElement, List<ExceptionCodeExpressions>> exceptionEnumToExceptionCodeExpressionsLists) {
+        exceptionEnumToExceptionCodeExpressionsLists
+            .values()
             .stream()
-            .map(Map.Entry::getValue)
             .flatMap(List::stream)
-            .map(expression -> expression.value.toString())
+            .map(ExceptionCodeExpressions::getCodeExpressionValue)
             // group by exception count, get appear times
             .collect(Collectors.toMap(exceptionCode -> exceptionCode, exceptionCode -> 1, Integer::sum))
             .entrySet()
@@ -161,26 +171,44 @@ class ProcessorUtil {
     }
 
     /* default */
-    static void prependExceptionSourceCode(final List<Map.Entry<TypeElement, List<JCTree.JCLiteral>>> exceptionEnumToEnumVariableCodeExpressionLists) {
+    static void prependExceptionSourceCode(final Map<TypeElement, List<ExceptionCodeExpressions>> exceptionEnumToEnumVariableCodeExpressionLists) {
         exceptionEnumToEnumVariableCodeExpressionLists
-            .forEach(enumToEnumVariableCodeExpression -> prependExceptionSourceCode(
-                enumToEnumVariableCodeExpression.getKey(),
-                enumToEnumVariableCodeExpression.getValue()
-            ));
+            .forEach(ProcessorUtil::prependExceptionSourceCode);
     }
 
-    private static void prependExceptionSourceCode(final TypeElement exceptionEnum, final List<JCTree.JCLiteral> variableCodeExpressions) {
+    private static void prependExceptionSourceCode(final TypeElement exceptionEnum, final List<ExceptionCodeExpressions> exceptionCodeExpressionsList) {
         final ExceptionSource exceptionSource = exceptionEnum.getAnnotation(ExceptionSource.class);
         final String exceptionSourceCode = exceptionSource.value();
 
-        variableCodeExpressions
+        exceptionCodeExpressionsList
             .forEach(variableCodeExpression ->
-                variableCodeExpression.value =
-                    String.join(
-                        EXCEPTION_CODE_SPLITTER,
-                        exceptionSourceCode,
-                        variableCodeExpression.value.toString()
-                    )
+                variableCodeExpression.setCodeExpressionValue(String.join(
+                    EXCEPTION_CODE_SPLITTER,
+                    exceptionSourceCode,
+                    variableCodeExpression.getCodeExpressionValue()
+                ))
             );
+    }
+
+    /*default*/
+    static void validateExceptionCodeExpressionsList(final Map<TypeElement, List<ExceptionCodeExpressions>> exceptionEnumToExceptionCodeExpressionsLists) {
+        exceptionEnumToExceptionCodeExpressionsLists.forEach((enumTypeElement, exceptionCodeExpressionsList) ->
+            exceptionCodeExpressionsList.forEach(exceptionCodeExpressions -> {
+                final String exceptionCode = exceptionCodeExpressions.getCodeExpressionValue();
+                if (StrUtil.isBlank(exceptionCode)) {
+                    throw new ExUnifierProcessException(String.format(
+                        "Invalid exception enum %s, contains enum with blank exception code",
+                        enumTypeElement.getQualifiedName()
+                    ));
+                }
+                if (exceptionCode.contains(EXCEPTION_CODE_SPLITTER)) {
+                    throw new ExUnifierProcessException(String.format(
+                        "Invalid exception enum %s, contains enum has code %s contains reserved character: \"%s\"",
+                        enumTypeElement.getQualifiedName(),
+                        exceptionCode,
+                        EXCEPTION_CODE_SPLITTER
+                    ));
+                }
+            }));
     }
 }

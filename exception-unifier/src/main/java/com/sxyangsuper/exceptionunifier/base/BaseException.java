@@ -1,5 +1,6 @@
 package com.sxyangsuper.exceptionunifier.base;
 
+import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -64,6 +65,10 @@ public class BaseException extends RuntimeException {
         baseException.initCause(cause);
         baseException.data = data;
         return baseException;
+    }
+
+    public Object[] getArgs() {
+        return ArrayUtil.clone(this.args);
     }
 
     @Override
