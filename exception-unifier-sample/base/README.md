@@ -10,6 +10,8 @@ For single project or multiple projects but team can assign prefix appropriately
 1. cd to the directory of this README file
 2. run commandline (suppose you already have [exception-unifier](https://github.com/sxyang-super/exception-unifier) in your local machine)
 > mvn clean verify
+> if you run test with IDEA, you need to start standby server manually before running
+>> go to `src/main/resources/exception-code-remote-server` and run `mvn clean install spring-boot:run`
 3. check source code and compiled code
 > source code 001: com/sxyangsuper/exceptionunifier/sample/base/SampleExceptionEnum.java:11
 > compiled code SAMPLE:U:001: exception-unifier-sample/base/target/classes/com/sxyangsuper/exceptionunifier/sample/base/SampleExceptionEnum.class:11
