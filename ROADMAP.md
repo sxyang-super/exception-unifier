@@ -16,7 +16,8 @@
 - **Q1 2025**
     - [x] feedback module exception codes
     - [x] feedback module exception message templates
-    - [ ] add retry for network requests
+    - [x] add retry for network requests
+    - [ ] internationalize exception messages support
 
 ## Backlog
   - [ ] auto detect module id if absent
@@ -25,4 +26,3 @@
   - [ ] same pattern for Nodejs + Typescript
   - [ ] support multiple development tools (eclipse and etc...)
   - [ ] create CI/CD though gitHub action or something else
-  - [ ] internationalize exception messages support~~
