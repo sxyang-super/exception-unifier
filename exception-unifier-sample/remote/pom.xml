@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.sxyang-super</groupId>
         <artifactId>exception-unifier-sample</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sample-remote</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

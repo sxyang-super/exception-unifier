@@ -14,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.TraceClassVisitor;
 
@@ -26,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -173,8 +176,6 @@ class ExceptionUnifierProcessorTest {
             cause.getMessage()
         );
     }
-
-
 
     @Test
     void should_throw_exception_given_there_is_duplicate_code_in_one_enum() {
@@ -375,6 +376,51 @@ class ExceptionUnifierProcessorTest {
             );
         }
 
+        @ParameterizedTest(name = "should retry successfully given http response code is {arguments}")
+        @CsvSource({
+            "500",
+            "502",
+            "503",
+            "504",
+            "429",
+        })
+        void should_retry_successfully_given_get_exception_code_fail_with_specific_response_code(
+            int httpResponseCode,
+            final WireMockRuntimeInfo wmRuntimeInfo
+        ) {
+            final String moduleId = "com.sample";
+
+            String requestURL = String.format(
+                "%s?%s=%s",
+                REMOTE_EXCEPTION_CODE_PATH_GET_PREFIX,
+                REMOTE_EXCEPTION_CODE_PARAMETER_NAME_MODULE_ID,
+                moduleId
+            );
+            stubFor(WireMock.get(requestURL)
+                .willReturn(WireMock.status(httpResponseCode).withBody("This is a test error")));
+
+            final RuntimeException compileException = assertThrows(RuntimeException.class,
+                () -> javac()
+                    .withProcessors(exceptionUnifierProcessor)
+                    .withOptions(
+                        "-Xlint",
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_REMOTE_BASE_URL, wmRuntimeInfo.getHttpBaseUrl()),
+                        String.format("-A%s=%s", Consts.PROCESSOR_ARG_NAME_MODULE_ID, moduleId)
+                    )
+                    .compile(javaFileObjects)
+            );
+
+            final Throwable cause = compileException.getCause();
+            assertInstanceOf(ExUnifierProcessException.class, cause);
+
+            Assertions.assertEquals(
+                String.format("Fail to get exception code prefix for module %s, remote request failed", moduleId),
+                cause.getMessage()
+            );
+
+            verify(3, getRequestedFor(urlEqualTo(requestURL)));
+        }
+
         @Test
         void should_throw_exception_given_get_exception_code_prefix_from_wrong_remote() {
             final RuntimeException compileException = assertThrows(RuntimeException.class,
@@ -515,7 +561,7 @@ class ExceptionUnifierProcessorTest {
                     postRequestedFor(
                         urlEqualTo(REMOTE_EXCEPTION_CODE_PATH_REPORT_EXCEPTION_ENUMS)
                     )
-                    .withRequestBody(WireMock.equalToJson(JSONUtil.toJsonStr(expectedCodeReportMeta)))
+                        .withRequestBody(WireMock.equalToJson(JSONUtil.toJsonStr(expectedCodeReportMeta)))
                 );
             }
 
