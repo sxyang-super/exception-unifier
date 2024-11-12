@@ -12,7 +12,7 @@
 
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-code-remote-server</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <name>A simple server providing exception code prefix</name>
 
