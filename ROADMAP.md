@@ -17,12 +17,12 @@
     - [x] feedback module exception codes
     - [x] feedback module exception message templates
     - [x] add retry for network requests
-    - [ ] internationalize exception messages support
 
 ## Backlog
-  - [ ] auto detect module id if absent
   - [ ] ensure works fine in offline mode
-  - [ ] upgrade supported java version to JDK11
+  - [ ] auto detect module id if absent
+  - [ ] internationalize exception messages support 
+  - [ ] upgrade supported java version to JDK9+
   - [ ] same pattern for Nodejs + Typescript
   - [ ] support multiple development tools (eclipse and etc...)
   - [ ] create CI/CD though gitHub action or something else
