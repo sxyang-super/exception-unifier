@@ -1,0 +1,4 @@
+.idea
+**/*/.idea
+**/*/target
+**/*/node_modules
