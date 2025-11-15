@@ -184,21 +184,21 @@ Mojo **check** and **sync** are working in this source type.
 <dependency>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-base</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 
 <!-- this one help apply basic checks against your exceptions during compile inflight -->
 <dependency>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-processor</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <scope>provided</scope>
 </dependency>
 
 <plugin>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-maven-plugin</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <executions>
       
       <execution>
@@ -346,7 +346,7 @@ Base steps are the same as BASE source type, only updated steps are listed here.
 <plugin>
   <groupId>io.github.sxyang-super</groupId>
   <artifactId>exception-unifier-maven-plugin</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <executions>
 
     <execution>

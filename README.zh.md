@@ -182,21 +182,21 @@ Mojo **check** 和 **sync** 在此源类型下工作。
 <dependency>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-base</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 
 <!-- 该依赖帮助在编译期间对你的异常进行基本检查 -->
 <dependency>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-processor</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <scope>provided</scope>
 </dependency>
 
 <plugin>
     <groupId>io.github.sxyang-super</groupId>
     <artifactId>exception-unifier-maven-plugin</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <executions>
       
       <execution>
@@ -343,7 +343,7 @@ REMOTE 源类型更适用于多个模块/团队的项目，这类项目要求异
 <plugin>
   <groupId>io.github.sxyang-super</groupId>
   <artifactId>exception-unifier-maven-plugin</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <executions>
 
     <execution>

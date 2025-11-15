@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.github.sxyang-super</groupId>
         <artifactId>exception-unifier-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
     </parent>
 
     <artifactId>exception-unifier-maven-plugin</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <packaging>maven-plugin</packaging>
 
     <name>exception-unifier-maven-plugin Maven Plugin</name>
@@ -44,8 +44,9 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>8</maven.compiler.release>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.encoding>UTF-8</maven.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,7 +88,7 @@
         <dependency>
             <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier-processor</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
         </dependency>
 
         <!-- test related -->
@@ -164,6 +165,7 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
                     <encoding>${maven.encoding}</encoding>
                 </configuration>
             </plugin>
