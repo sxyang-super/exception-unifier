@@ -7,11 +7,11 @@
     <parent>
         <groupId>io.github.sxyang-super</groupId>
         <artifactId>exception-unifier-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1</version>
     </parent>
 
     <artifactId>exception-unifier-processor</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
 
     <name>exception-unifier-processor Maven Plugin</name>
 
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>io.github.sxyang-super</groupId>
             <artifactId>exception-unifier-base</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
         </dependency>
 
         <!-- provided -->

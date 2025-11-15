@@ -28,6 +28,10 @@ public class CheckHandler {
         final List<ExceptionEnum> exceptionEnumClassFilePaths = new ArrayList<>();
         final Map<String, String> exceptionSourceConcatCodeToOwnerQualifiedNames = new HashMap<>();
         for (final File classFile : FileUtil.loopFiles(outputDirectory)) {
+            if (!classFile.getName().endsWith(".class")) {
+                continue;
+            }
+
             final ExceptionEnum exceptionEnum = this.parse(classFile);
             if (exceptionEnum == null) {
                 continue;

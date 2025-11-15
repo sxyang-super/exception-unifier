@@ -4,12 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
+import cn.hutool.core.util.CharsetUtil;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -43,6 +40,17 @@ class CheckHandlerTest {
 
     @Nested
     class CheckExceptionEnumsTest {
+
+        @Test
+        void should_skip_non_class_file() throws MojoExecutionException {
+            String tempNoClassFilePath = String.join(File.separator, TEST_CASE_CORRESPONDING_CLASS_DIRECTORY, "application.yml");
+            FileUtil.writeString("", tempNoClassFilePath, CharsetUtil.CHARSET_UTF_8);
+            CheckHandler checkHandler = new CheckHandler(getMockMojoConfiguration(TEST_CASE_CORRESPONDING_CLASS_DIRECTORY));
+            List<ExceptionEnum> exceptionEnums = checkHandler.checkExceptionEnums()
+                .getExceptionEnums();
+            Assertions.assertTrue(CollUtil.isEmpty(exceptionEnums));
+            FileUtil.del(tempNoClassFilePath);
+        }
 
         @Test
         void should_succeed_given_all_classes_are_not_exception_enum() throws MojoExecutionException {
